@@ -1,10 +1,31 @@
 <script>
+	import {Vector3} from 'three';
+	import ThreeDView from './ThreeD/ThreeDView.svelte';
+	import Text from './ThreeD/Text.svelte';
+	import ObjectSpinZoom from './ThreeD/ObjectSpinZoom.svelte';
 	export let name;
+
+	let objects = [
+		{text: `Hello ${name}`, position: new Vector3(0,0,0) }
+	];
+	function click(e) {
+		const position = new Vector3(Math.random()-0.5, Math.random()-0.5, Math.random()-0.5).normalize();
+		objects.push( {text: name, position});
+		objects = objects;
+	}
 </script>
 
 <main>
-	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
+	<div class='view3d'>
+		<ThreeDView >
+			<ObjectSpinZoom>
+				{#each objects as object}
+				<Text text={object.text}  position={object.position} fontSize={0.2}/>
+				{/each}
+			</ObjectSpinZoom>
+		</ThreeDView>
+	</div>
+	<button type="button" on:click={click}>Click Me!</button>
 </main>
 
 <style>
@@ -15,11 +36,12 @@
 		margin: 0 auto;
 	}
 
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
+	.view3d {
+		width: 80%;
+		height: 600px;
+		margin: 16px;
+		display: flex;
+		background-color: green;
 	}
 
 	@media (min-width: 640px) {
