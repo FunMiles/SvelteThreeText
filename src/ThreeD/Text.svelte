@@ -13,7 +13,12 @@
     export let outlineColor = 0;
     const { getScene, markDirty } = getContext(key);
 
+    const triggerRender = () => {
+        markDirty && markDirty();
+    };
+
     const myText = new Text();
+    myText.addEventListener('synccomplete', triggerRender);
     myText.anchorX = 'center';
     myText.anchorY = 'middle';
     $: myText.text = text;
@@ -30,21 +35,21 @@
     $: myText.color = color;
     $: myText.outlineWidth = outlineWidth;
     $: myText.outlineColor = outlineColor;
-    myText.sync(() => { 
-        markDirty && markDirty();
-        if (!markDirty)
-            console.log('No dirty');
-            else console.log('got a dirty')
-     });
+    $: { 
+        myText.sync();
+    }
+
 
     onMount( () => {
         console.log('Adding to scene');
+        
         getScene().add(myText);
         markDirty && markDirty();
     });
     onDestroy( () => {
         if(myText.parent)
             myText.parent.remove(myText);
+        myText.removeEventListener('synccomplete', triggerRender);
         myText.dispose();
     });
 </script>
